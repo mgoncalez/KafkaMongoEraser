@@ -6,6 +6,9 @@ using MongoDB.Driver;
 using Confluent.Kafka.Admin;
 using System.Threading.Tasks;
 using Confluent.Kafka;
+using System.Security.Cryptography.X509Certificates;
+using System.Security.Authentication;
+using System.Net.Security;
 
 namespace KafkaMongoEraser
 {
@@ -17,21 +20,23 @@ namespace KafkaMongoEraser
 
         public static async Task Main(string[] args)
         {
-            bool executeForMongo = false;
-            bool executeForKafka = true;
+            bool executeForMongo = true;
+            bool executeForKafka = false;
 
             if (executeForMongo)
             {
                 string[] MongoCollections = new string[] { "articles", "books", "categories", "collections", "tree" };
 
                 var client = new MongoClient("mongodb://localhost:27018");
-                //var client = new MongoClient("mongodb://dummiesDev:hdEy1gfFm8feQpdtG92Cwd@dummies-dev-docdb.cluster-cafz4eqeitkh.us-east-1.docdb.amazonaws.com:27017/");
+                //var client = new MongoClient("SERVER_CONNECTION_STRING");
+                //client = new MongoClient(SetupSettingsMongo());
 
                 var database = client.GetDatabase("dummies_v2");
 
                 foreach (string collection in MongoCollections)
                 {
-                    database.DropCollection(collection);
+                    database.ListCollectionNames();
+                    //database.DropCollection(collection);
                 }
             }
 
@@ -45,6 +50,30 @@ namespace KafkaMongoEraser
                 //kafka-topics --bootstrap-server ip-pl-kfkbq01.aws.wiley.com:9092 --create --topic wly.glb.dummies.dummies-category-filter-books
                 //kafka-topics --bootstrap-server ip-pl-kfkbq01.aws.wiley.com:9092 --create --topic wly.glb.dummies.dummies-category-filter-articles
             }
+        }
+
+        private static MongoClientSettings SetupSettingsMongo()
+        {
+            string CERT_PATH = "cert_path";
+            string URL_CONNECTION = "url_connection";
+            string CERT_HASH = "cert_hash";
+
+            using X509Store localTrustStore = new(StoreName.Root);
+            var certificateCollection = new X509Certificate2Collection();
+            certificateCollection.ImportFromPem(CERT_PATH);
+            localTrustStore.Open(OpenFlags.ReadWrite);
+            localTrustStore.AddRange(certificateCollection);
+
+            var settings = MongoClientSettings.FromUrl(new MongoUrl(URL_CONNECTION));
+            settings.SslSettings = new SslSettings
+            {
+                EnabledSslProtocols = SslProtocols.Tls12,
+                ServerCertificateValidationCallback = delegate (object s, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+                {
+                    return certificate.GetCertHashString() == CERT_HASH;
+                }
+            };
+            return settings;
         }
 
         private static async Task CreateTopicsAsync()
