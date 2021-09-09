@@ -14,14 +14,14 @@ namespace KafkaMongoEraser
 {
     internal class Program
     {
-        private static readonly string[] topicsName = new string[] { "articles", "books", "categories", "tree", "collections", "home", "category-filter-articles", "category-filter-books" };
+        private static readonly string[] topicsName = new string[] { /*"articles", "books", "categories", "tree", "collections", "home", "category-filter-articles", "category-filter-books", "authors"*/ "articles" };
         private const string topicsBaseName = "wly.glb.dummies.dummies-";
-        private const string kafkaServer = "localhost:9092"; //ip-pl-kfkbq01.aws.wiley.com:9092
+        private const string kafkaServer = "ip-pl-kfkbq01.aws.wiley.com:9092"; //ip-pl-kfkbq01.aws.wiley.com:9092
 
         public static async Task Main(string[] args)
         {
-            bool executeForMongo = true;
-            bool executeForKafka = false;
+            bool executeForMongo = false;
+            bool executeForKafka = true;
 
             if (executeForMongo)
             {
