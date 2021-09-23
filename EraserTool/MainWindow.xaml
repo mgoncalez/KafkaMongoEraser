@@ -7,10 +7,10 @@
         mc:Ignorable="d"
         Title="EraserTool" Height="450" Width="800">
     <Grid>
-        <Label Content="Kafka Topic Name To Create/Delete" HorizontalAlignment="Left" Margin="55,37,0,0" VerticalAlignment="Top" />
-        <TextBox x:Name="TextBoxTopic" HorizontalAlignment="Left" Margin="63,64,0,0" Text="TextBox" TextWrapping="NoWrap" VerticalAlignment="Top" Width="189" />
-        <ListBox x:Name="ListBoxItems" HorizontalAlignment="Left" Height="247" Margin="64,117,0,0" VerticalAlignment="Top" Width="190" SelectionMode="Multiple" />
-        <Label Content="Or Select One or More in the List Below" HorizontalAlignment="Left" Margin="57,87,0,0" VerticalAlignment="Top" />
+        <Label Content="Enter Kafka Topic  / Mongo Collection Name&#xD;&#xA;(Separated with ,)" HorizontalAlignment="Left" Margin="55,37,0,0" VerticalAlignment="Top" Width="251" />
+        <TextBox x:Name="TextBoxTopic" HorizontalAlignment="Left" Margin="64,83,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="189" />
+        <ListBox x:Name="ListBoxItems" HorizontalAlignment="Left" Height="247" Margin="65,158,0,0" VerticalAlignment="Top" Width="190" SelectionMode="Multiple" />
+        <Label Content="And/Or Select One or More in the List Below" HorizontalAlignment="Left" Margin="58,128,0,0" VerticalAlignment="Top" />
         <Button x:Name="SelectAll" Content="Select All" HorizontalAlignment="Left" Margin="280,277,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.202,-0.549" Click="SelectAllKafka_Click" />
         <Button x:Name="ExecuteKafka" Content="Delete+Create For Kafka" HorizontalAlignment="Left" Margin="280,311,0,0" VerticalAlignment="Top" Click="ExecuteKafka_ClickAsync" />
         <Button x:Name="ExecuteMongo" Content="Clear Mongo Collection" HorizontalAlignment="Left" Margin="280,344,0,0" VerticalAlignment="Top" Click="ExecuteMongo_Click" />
@@ -21,7 +21,7 @@
         <Label Content="Certification Path" HorizontalAlignment="Left" Margin="382,149,0,0" VerticalAlignment="Top" />
         <Label Content="Certification Hash" HorizontalAlignment="Left" Margin="379,178,0,0" VerticalAlignment="Top" />
         <TextBox x:Name="TextBoxMongoHash" HorizontalAlignment="Left" Margin="488,183,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="271" />
-        <Button x:Name="ButtonMongoConnect" Content="Connect to Mongo" HorizontalAlignment="Left" Margin="644,217,0,0" VerticalAlignment="Top" Width="115" />
         <TextBox x:Name="TextBoxMongoCertPath" HorizontalAlignment="Left" Margin="488,153,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="271" />
+        <CheckBox x:Name="ChkNoRecreate" Content="Check to do not recreate Kafka Topic" HorizontalAlignment="Left" Margin="63,110,0,0" VerticalAlignment="Top" Checked="ChkNoRecreate_Checked" />
     </Grid>
 </Window>

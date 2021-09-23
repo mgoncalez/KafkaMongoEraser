@@ -53,7 +53,7 @@ namespace EraserTool
                         .SetBasePath(Directory.GetParent(workingDirectory).Parent.Parent.FullName)
                         .AddJsonFile($"appsettings.json", false, true);
 
-            var environment = "development";
+            var environment = "production";
 
             var configurationRoot = builder.Build();
 
@@ -117,6 +117,24 @@ namespace EraserTool
                         MessageBox.Show($"An error occured creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
                     }
                 }
+
+                if (ChkNoRecreate.IsChecked == false)
+                {
+                    foreach (var topic in TextBoxTopic.Text.Split(','))
+                    {
+                        string topicName = topic;
+
+                        try
+                        {
+                            await adminClient.CreateTopicsAsync(new TopicSpecification[] {
+                        new TopicSpecification { Name = topicName } });
+                        }
+                        catch (CreateTopicsException e)
+                        {
+                            MessageBox.Show($"An error occured creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
+                        }
+                    }
+                }
             }
         }
 
@@ -136,22 +154,50 @@ namespace EraserTool
                         MessageBox.Show($"An error occured creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
                     }
                 }
+
+                foreach (var topic in TextBoxTopic.Text.Split(','))
+                {
+                    var topicName = topic;
+                    try
+                    {
+                        await adminClient.DeleteTopicsAsync(new string[] { topicName });
+                    }
+                    catch (DeleteTopicsException e)
+                    {
+                        MessageBox.Show($"An error occured creating topic {e.Results[0].Topic}: {e.Results[0].Error.Reason}");
+                    }
+                }
             }
         }
 
         private void ExecuteMongo_Click(object sender, RoutedEventArgs e)
         {
+            var msgBoxResult = MessageBox.Show("This will erase all selected MongoDB collection. Are you sure do you want to continue?", "Warning", MessageBoxButton.YesNo);
+
+            if (msgBoxResult == MessageBoxResult.No)
+            {
+                return;
+            }
+
             var client = new MongoClient(SetupSettingsMongo());
 
             var database = client.GetDatabase("dummies_v2");
 
             var list = database.ListCollectionNames();
 
-            foreach (var topic in ListBoxItems.SelectedItems)
+            foreach (var collection in ListBoxItems.SelectedItems)
             {
-                var item = listKafkaMongo.Find(x => x.Item == (string)topic).Mongo;
+                var item = listKafkaMongo.Find(x => x.Item == (string)collection).Mongo;
                 database.GetCollection<object>(item).DeleteManyAsync(Builders<object>.Filter.Empty);
             }
+
+            foreach (var collection in TextBoxTopic.Text.Split(','))
+            {
+                var item = collection;
+                database.GetCollection<object>(item).DeleteManyAsync(Builders<object>.Filter.Empty);
+            }
+
+            MessageBox.Show("Clearing completed");
         }
 
         private MongoClientSettings SetupSettingsMongo()
@@ -185,6 +231,10 @@ namespace EraserTool
                 };
                 return settings;
             }
+        }
+
+        private void ChkNoRecreate_Checked(object sender, RoutedEventArgs e)
+        {
         }
     }
 }
